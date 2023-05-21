@@ -1,3 +1,33 @@
+---
+title: "PRORI"
+author: "Clinton Cabello"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+```{r}
 #################################################
 # Universidad nacional José Faustino Sánchez Carrión                                                                                                                                                 Mg. Víctor Guevara P.
 # Mg. Victor Guevara P.
@@ -27,10 +57,6 @@ obesidad_df <- read.csv(url, sep=";",encoding = "latin1", stringsAsFactors = TRU
 # Mostrar los 6 primeros registros 
 head(obesidad_df)
 
-#Guardar la data en el directorio
-write.csv(obesidad_df, file = "Obesidad_r")
-
-getwd()
 #Observar todo el conjunt de datos
 View(obesidad_df)
 
@@ -174,4 +200,6 @@ library(rgl)
 plot3d(obesidad_df[,2:4], type="s", radius = 4, 
        col = as.integer(N_Obesidad))
 
+
+```
 

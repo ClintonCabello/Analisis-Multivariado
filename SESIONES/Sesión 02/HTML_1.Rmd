@@ -1,12 +1,30 @@
+---
+title: "data exploration"
+author: "Clinton Cabello"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+![](C:/Users/lenovo/Pictures/Logo.jpg"){width='120px'}
+
+```{r}
+# Conjunto de datos para la estimación de niveles de obesidad basados ​​en hábitos alimentarios y condición física en individuos de Colombia, Perú y México
+
+## Tabla 1 . Preguntas de la encuesta utilizadas para la recolección inicial de información.
+
+## Preguntas	Respuestas posibles
+### ¿Cuál es su género?
+
+
 #################################################
-# Universidad nacional José Faustino Sánchez Carrión                                                                                                                                                 Mg. Víctor Guevara P.
+# Universidad nacional José Faustino Sánchez Carrión                                                                                                                                                
 # Mg. Victor Guevara P.
 # Sesión: Exploración de datos
 ################################################ 
 
+# limpiamos la memoria
 rm(list = ls())
 ls()
-
 # Caso 1: Nivel de Obesidad
 # Conjunto de datos para la estimación de niveles de obesidad basados en hábitos
 # alimentarios y condición física en individuos de Colombia, Perú y México.
@@ -27,15 +45,11 @@ obesidad_df <- read.csv(url, sep=";",encoding = "latin1", stringsAsFactors = TRU
 # Mostrar los 6 primeros registros 
 head(obesidad_df)
 
-#Guardar la data en el directorio
-write.csv(obesidad_df, file = "Obesidad_r")
-
-getwd()
 #Observar todo el conjunt de datos
 View(obesidad_df)
 
 # Observar y manipular (cambiar) en DF
-#fix(obesidad_df)
+fix(obesidad_df)
 
 # Estructura de los datos
 str(obesidad_df)
@@ -173,5 +187,9 @@ plot(obesidad_df[,2:4])
 library(rgl)
 plot3d(obesidad_df[,2:4], type="s", radius = 4, 
        col = as.integer(N_Obesidad))
+
+
+```
+
 
 
