@@ -1,30 +1,38 @@
 print('HOLA')
-data(iris)
+
 #limpiar memoria
 rm(list = ls())
+
 # setear directorio de trabajo (dar directorio)
 setwd("C:/clinton")
+
 # observar el direrctorio
 getwd()
+
 # importar datos
 data(iris)
 head(iris)
 head(iris,10)
+
 #Guardar la data en el directorio
 write.csv(iris, file = "iris_R")
+
 #analisis exploratoio
 plot(iris)
 plot(iris, col = "red")
 plot(iris, col = "blue")
 plot(iris, col = "Species")
 plot(iris, col = iris$Species)
+
 # graficar solo para los variables
 plot(iris$Petal.Length, iris$Petal.Width)
+
 # graficar solo para los variables
 plot(iris$Petal.Length, iris$Petal.Width, col = iris$Species)
 plot(iris$Petal.Length, iris$Petal.Width, col = iris$Species, type = "l")
 plot(iris$Petal.Length, iris$Petal.Width, col = iris$Species, type = "o")
 plot(iris$Petal.Length, iris$Petal.Width, col = iris$Species, type = "p")
+
 install.packages("PerformanceAnalytics")
 library(PerformanceAnalytics)
 chart.correlation(cor(iris))
@@ -43,11 +51,11 @@ library(funModeling)
 plot_num(iris)
 plot_num(iris, path_out = "GRAFICA")
 status(iris)
+
 # ESTADISTICA DESCRIPTIVA
 profiling_num(iris)
 freq(iris)
 plot_num(iris, path_out = "grafica2")
-library(ggplot2)
 library(ggplot2)
 ggplot(data = iris)
 names(iris)
