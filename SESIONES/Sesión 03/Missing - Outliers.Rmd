@@ -1,0 +1,331 @@
+---
+title:  "Exploratory Data Analysis (EDA)"
+author: "Clinton Cabello Rafael"
+date: "2023-05"
+output: html_document
+---
+![](https://www.unjfsc.edu.pe/biblioplax/gestion/img/presentacion.png)
+
+
+# **<span style="color:blue;">"DETECCIÓN Y TRATAMIENTO DE DATOS AUSENTES (MISSING)"</span>**
+
+
+## Detección de datos ausentes
+```{r, message= FALSE, warning=FALSE}
+
+#Limpiamos la memoria
+rm(list = ls())
+ls()
+```
+
+```{r,message= FALSE, warning=FALSE}
+# Verificar el directorio de trabajo
+getwd()
+```
+
+Cargamos la data
+```{r, message= FALSE, warning=FALSE}
+library(readr)
+data =  read_delim("CHURNM.CSV", delim = ";", escape_double = FALSE, 
+                   locale = locale(encoding = "WINDOWS-1252"),trim_ws = TRUE)
+
+```
+La función head() muestra el contenido de la tabla de datos que acabamos que cargar
+
+```{r, message= FALSE, warning=FALSE}
+#visualizamos la data
+head(data)
+```
+la función str() permite conocer de forma compacta la estructura interna de la tabla de datos indicando el tipo de variables, los rangos de valores y una muestra de dichos valores donde de un vistazo se puede apreciar la presencia de valores ausentes identificados mediante las siglas NA (del inglés, not allowed o no disponible)
+
+```{r,message= FALSE, warning=FALSE}
+# revisar la estructura de los datos
+str(data)
+```
+La función summary()
+muestra un resumen general de las variables de la tabla, mostrando los valores: mínimo,máximo, media, mediana, primer y tercer cuartil para las variables numéricas, indicandoademás el número específico de valores NA presentes en cada una.
+```{r,message= FALSE, warning=FALSE}
+# Resumen estadística de las variables numéricos
+summary(data)
+```
+
+Visualización de distribuciones para la variable MetodoPago
+
+```{r, message= FALSE, warning=FALSE}
+library(ggplot2)
+ggplot(data = data) +
+  geom_bar(mapping = aes(x = MetodoPago))
+
+```
+
+
+## VERIFICACIÓN DE VALORES MISSING
+
+La presencia de datos ausentes, perdidos, missing values, o celdas vacías,
+representados habitualmente en R como NA, es una problemática habitual en
+muchos conjuntos datos. La mayoría de las veces se debe a fallos en la transcripción de los datos o problemas durante la recogida de datos, por ejemplo, debido a la imposibilidad para obtener cierta medida u observación.
+Tratar con conjuntos de datos en los que existen datos ausentes puede generar
+problemas a la hora de aplicar diferentes análisis estadísticos o en la generación de representaciones gráficas. A fin de evitar problemas futuros, es necesario aprender a detectar y aplicar algún tipo de tratamiento.
+
+
+```{r,message= FALSE, warning=FALSE}
+
+```
+La función is.na().Es la función más sencilla para evaluar los valores ausentes ya que presenta un valor lógico de TRUE si existe un valor ausente n una fila (funciona en vector, lista, matrices y data frame).
+
+```{r,message= FALSE, warning=FALSE}
+# Devuelve un vector lógico
+head(is.na(data))
+```
+
+La función any(is.na()) devuelve TRUE si la tabla presenta al menos un valor ausente, sin indicar el número de valores perdidos que presenta la tabla, ni la posición
+```{r,message= FALSE, warning=FALSE}
+any(is.na(data)) 
+```
+
+la función sum(is.na()), permite determinar el número de valores ausentes
+```{r, message= FALSE, warning=FALSE}
+# Devuelve el número de NAs que presenta la tabla
+sum(is.na(data)) 
+```
+mean(is.na()),muestra el porcentaje de valores perdidos que presenta la tabla con la cual estamos trabajando
+
+```{r, message= FALSE, warning=FALSE}
+# Devuelve el % de valores perdidos
+mean(is.na(data)) 
+```
+
+En ocasiones conviene realizar una detección de valores ausentes por columnas, en
+lugar de por filas, para identificar si alguna de las variables del dataset presenta un determinado nivel de datos perdidos. Para ello podemos utilizar la función colMeans(is.na()) y la función colSums(is.na()).
+
+```{r, message= FALSE, warning=FALSE}
+# Detección del número de valores perdidos en cada una de las columnas que presenta la tabla
+colSums(is.na(data))
+```
+
+```{r, message= FALSE, warning=FALSE}
+# Detección del % de valores perdidos en cada una de las columnas que presenta la tabla
+colMeans(is.na(data), round(2))
+```
+
+
+```{r, message= FALSE, warning=FALSE}
+# Determinación del porcentaje de valores perdidos respecto del total de datos para cada columna
+porcentajeMiss = function(x) {
+  sum(is.na(x)) / length(x)*100
+  }
+
+apply(data, 2, porcentajeMiss)
+```
+
+Determinar los valores existentes en cada columna del set de datos.
+```{r, message= FALSE, warning=FALSE}
+# valores que tiene la columna MetodoPago
+unique(data$MetodoPago)
+```
+
+
+Determinar cuantos valores NA hay en cada columna.
+```{r, message= FALSE, warning=FALSE}
+apply(data, MARGIN = -1, function(x) sum(is.na(x))) 
+```
+
+## Visualización
+
+(Visdat y Naniar).Estas librerías permiten visualizar en forma más expedita la 
+proporción de datos perdidos dentro de un conjunto de datos.
+
+```{r, message= FALSE, warning=FALSE}
+library(visdat) # visualización de datos
+library(naniar)
+library(mice)
+```
+
+Para determinar el patrón de datos hacemos uso de la librería mice.
+```{r, message= FALSE, warning=FALSE}
+md.pattern(data,rotate.names = T)
+```
+
+Visualización gráfica de proporción de datos perdidos y donde se producen.
+```{r, message= FALSE, warning=FALSE}
+vis_dat(data)
+```
+
+Determinación del porcentaje de datos perdidos.
+```{r, message= FALSE, warning=FALSE}
+vis_miss(data ,sort_miss = TRUE) 
+```
+cluster agrupa los datos faltantes
+```{r, message= FALSE, warning=FALSE}
+vis_miss(data ,sort_miss = TRUE, cluster = TRUE)
+```
+Según los resultados el porcentaje de missing, respecto al total es 2.3% (Muy pequeño)
+
+El porcentaje de missing de acuerdo a cada columna esta entre 1-5% (manejable)
+```{r, message= FALSE, warning=FALSE}
+
+```
+
+## Tratamiento de datos ausentes
+
+Existen varias maneras de tratar con valores ausentes:
+
+Rellenar los valores con la media, mediana o el valor más frecuente de la
+variable.
+
+- Completar los valores que faltan por el valor que esté directamente antes o
+después en la fila o columna.
+- Completar todos los datos faltantes con 0, si se trata de valores numéricos. Esta
+opción es poco aconsejable ya que puedes modificar de manera significativa los
+resultados.
+- Eliminar las filas que presenten valores ausentes, siempre y cuando el conjunto
+de datos sea lo suficientemente grande y no se pierde información relevante al
+eliminar esas filas.
+- Una forma abrupta de tratamiento que depende del contexto de análisis, es
+eliminar las variables que presentan un porcentaje mayor del 50% de datos
+ausentes.
+
+
+Primer caso: Eliminar todos los missing
+```{r, message= FALSE, warning=FALSE}
+
+data_sin_missing = na.omit(data)
+dim(data_sin_missing)
+```
+
+Segundo Caso: Reemplazamos con la mediana y moda
+```{r, message= FALSE, warning=FALSE}
+
+library(DMwR2)
+data_imp_mtc = centralImputation(data) # Mediana (numérico), moda (no numérico)
+dim(data_imp_mtc)
+vis_miss(data_imp_mtc)
+
+```
+
+Tercer Caso: Reemplazo con la media, mediana y moda
+```{r, message= FALSE, warning=FALSE}
+
+library(VIM)
+data_imp_mtc2 = initialise(data, method="median") #Media (continuo), Mediana (discreto), moda (No numérico)
+dim(data_imp_mtc2) 
+vis_miss(data_imp_mtc2) 
+```
+
+# **<span style="color:green;">"DETECCIÓN Y TRATAMIENTO DE VALORES ATÍPICOS (OUTLIERS)"</span>**
+
+
+Gráfico de caja (boxplot) de una variable ImporteTotal respecto al método de pago
+```{r, message= FALSE, warning=FALSE}
+library(plotly)
+plot_ly (data =  data, x = ~ImporteTotal, y = ~ MetodoPago,type = "box", 
+         color = ~ MetodoPago)
+```
+
+Calculamos los valores estandarizados de cada columna utilizando la función scale()
+```{r, message= FALSE, warning=FALSE}
+# Estandarizar de las variables del DataFrame 
+data_estandar = cbind(scale(data[,12:14]),data[,1:11], data[,15:16])
+head(data_estandar)
+```
+## Detección de valores Outliers.
+
+
+Establecemos un límite para considerar valores atípicos, por ejemplo, si el puntaje Z es mayor a 3 o menor a -3. Finalmente, utilizamos la función apply() para verificar si algún valor en cada fila del DataFrame estandarizado excede el límite establecido, y seleccionamos las filas que cumplan esta condición.
+
+Identificando valores outliers a partir de los estandarizados - rango intercuartílico (IQR)
+```{r, message= FALSE, warning=FALSE}
+
+library(dplyr)
+library(outliers)
+data_imp_mtc[, 12:14]
+# Estandarizar los datos sin missing utilizando la función scale:
+df_scaled = as.data.frame(scale(data_imp_mtc[, 12:14]))
+head(df_scaled)
+# Calculamos RIQ para cada variable utilizando la función IQR y luego identificar los outliers utilizando un umbral arbitrario (por ejemplo, 1.5 veces el IQR)
+
+outliers_IQR = df_scaled %>%
+  mutate_if(is.numeric, funs(outlier = ifelse(abs(.) > 1.5 * IQR(.), "Yes", "No")))
+
+head(outliers_IQR, 10)
+
+```
+
+Método basado en estadísticas: Outliers bivariado
+```{r, message=FALSE, warning=FALSE}
+# boxplot con las variables estandarizadas
+boxplot(data_estandar[,1:3])
+```
+
+
+## Eliminamos los Outliers
+
+### Usando el rango intercuartil (IQR)
+```{r, message=FALSE, warning=FALSE}
+### Usando el rango intercuartil (IQR) - Cargo mensual 
+q1C = quantile(df_scaled$CargoMensual, 0.25)
+q3C = quantile(df_scaled$CargoMensual, 0.75)
+
+# Calcular Q1, Q3 y IQR
+iqrC = q3C - q1C
+
+# Calcular los límites para identificar los outliers
+lim_infC = q1C - 1.5 * iqrC
+lim_supC = q3C + 1.5 * iqrC
+
+# Eliminar los outliers
+datos_sin_outliers_Cargo = df_scaled$CargoMensual[df_scaled$CargoMensual >= lim_infC & df_scaled$ImporteTotal <= lim_supC]
+
+# Imprimir el resultado
+head(datos_sin_outliers_Cargo) 
+
+#Grafica
+boxplot(datos_sin_outliers_Cargo, main = "Boxplot de la variable Importe Cargo Mensual ") 
+
+```
+
+```{r, message= FALSE, warning=FALSE}
+q1I = quantile(df_scaled$ImporteTotal, 0.25)
+q3I = quantile(df_scaled$ImporteTotal, 0.75)
+
+# Calcular Q1, Q3 y IQR
+iqrI = q3I - q1I
+
+# Calcular los límites para identificar los outliers
+lim_infI = q1I - 1.5 * iqrI
+lim_supI = q3I + 1.5 * iqrI
+
+# Eliminar los outliers
+datos_sin_outliers_Importe = df_scaled$ImporteTotal[df_scaled$ImporteTotal >= lim_infI & df_scaled$ImporteTotal <= lim_supI]
+
+# Imprimir el resultado
+head(datos_sin_outliers_Importe) 
+
+#Grafica
+boxplot(datos_sin_outliers_Importe, main = "Boxplot de la variable Importe Total") #Grafica
+
+```
+
+
+```{r, message= FALSE, warning=FALSE}
+q1P = quantile(df_scaled$pemanencia, 0.25)
+q3P = quantile(df_scaled$pemanencia, 0.75)
+# Calcular Q1, Q3 y IQR
+iqrP = q3P - q1P
+
+# Calcular los límites para identificar los outliers
+lim_infP = q1P - 1.5 * iqrP
+lim_supP = q3P + 1.5 * iqrP
+
+# Eliminar los outliers
+datos_sin_outliers_Permanencia = df_scaled$pemanencia[df_scaled$pemanencia >= lim_infP & df_scaled$pemanencia <= lim_supP]
+
+# Imprimir el resultado
+head(datos_sin_outliers_Permanencia) 
+
+#Grafica
+boxplot(datos_sin_outliers_Permanencia, main = "Boxplot de la variable Permanencia") #Grafica
+
+```
+
+
