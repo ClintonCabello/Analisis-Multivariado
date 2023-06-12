@@ -49,6 +49,7 @@ url<-"https://raw.githubusercontent.com/VictorGuevaraP/ME-Machine-Learning/maste
 banco_df<-read.csv(url, sep = ",", stringsAsFactors = T, encoding = "latin1")
 # Mostrar los primeros registros
 head(banco_df)
+View(banco_df)
 # revisar la estructura de los datos
 str(banco_df)
 # Ver editor de datos
@@ -224,3 +225,27 @@ atipicos = subset(outliers_multi,  outliers_multi[9] < 0.01)
 atipicos
 atipicos[order(atipicos$out,decreasing = TRUE),]
 
+
+# Paso 1: Importar la biblioteca "tidyverse"
+library(tidyverse)
+
+# Paso 2: Crear los vectores con los datos
+A = c(62,60,63,59)
+B = c(63,67,71,64,65)
+C = c(68,66, 71,67,68)
+D = c(56,62,60,61,63,64)
+
+# Paso 3: Crear el DataFrame utilizando la función data.frame()
+df <- data.frame(A = A, B = B, C = C, C=C)
+
+d  = data.frame(A = c(62,60,63,59,NA ,NA),
+                B = c(63,67,71,64,65,NA),
+                C = c(68,66, 71,67,68,NA),
+                D = c(56,62,60,61,63,64))
+d
+
+library(stats)
+# Realizar el análisis de varianza
+model = lm(res)
+modelo <- lm(d ~A , data = d)
+anova_resultados <- anova(modelo)
